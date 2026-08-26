@@ -5,8 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Film, ImageIcon, X } from "lucide-react";
 import type { MarketingAd } from "@/lib/types/admin";
 
-const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
-
 /**
  * Card media that respects the file's own orientation: landscape media fills a
  * 16:9 frame; portrait media (e.g. Reels/TikTok-style ads) switches to a
@@ -80,14 +78,11 @@ export default function MarketingAdGrid({ ads }: { ads: MarketingAd[] }) {
             className="neon-ring group flex flex-col"
           >
             <div className="flex flex-1 flex-col overflow-hidden rounded-[10px] bg-[#101113]">
-            <AdMedia ad={ad} onOpenImage={() => setActive(ad)} />
-            <div className="flex flex-1 flex-col p-5">
-              <h3 className="font-syne text-[17px] font-bold text-body" style={{ letterSpacing: "-0.01em" }}>
-                {ad.title}
-              </h3>
-              {ad.description && <p className="mt-2 text-[14px] font-dm leading-relaxed text-muted">{ad.description}</p>}
-              <p className="mt-auto pt-4 text-[12px] font-dm text-muted/70">{dateFmt.format(new Date(ad.createdAt))}</p>
-            </div>
+              <AdMedia ad={ad} onOpenImage={() => setActive(ad)} />
+              {/* Titles belong to the collection, not each ad — only show a description if one was written. */}
+              {ad.description && (
+                <p className="px-4 py-3 text-[13px] font-dm leading-relaxed text-muted">{ad.description}</p>
+              )}
             </div>
           </motion.article>
         ))}
@@ -120,10 +115,9 @@ export default function MarketingAdGrid({ ads }: { ads: MarketingAd[] }) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={active.mediaUrl} alt={active.title} className="max-h-[80vh] w-auto max-w-full rounded-lg object-contain shadow-2xl shadow-black/60" />
-              <figcaption className="mt-4 text-center">
-                <p className="font-syne text-[16px] font-bold text-white">{active.title}</p>
-                {active.description && <p className="mt-1 max-w-xl text-[13px] font-dm text-white/60">{active.description}</p>}
-              </figcaption>
+              {active.description && (
+                <figcaption className="mt-4 max-w-xl text-center text-[13px] font-dm text-white/60">{active.description}</figcaption>
+              )}
             </motion.figure>
           </motion.div>
         )}

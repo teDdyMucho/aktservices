@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ArrowLeft, Film, ImageIcon } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
-import MarketingAdGrid from "@/components/MarketingAdGrid";
+import MarketingFolderTabs from "@/components/MarketingFolderTabs";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   FOLDER_COLUMNS,
@@ -92,8 +92,10 @@ export default async function MarketingFolderPage({ params }: Params) {
   if (!data) notFound();
 
   const { name, description, ads } = data;
-  const images = ads.filter((a) => a.mediaType === "image").length;
-  const videos = ads.length - images;
+  const imageAds = ads.filter((a) => a.mediaType === "image");
+  const videoAds = ads.filter((a) => a.mediaType === "video");
+  const images = imageAds.length;
+  const videos = videoAds.length;
 
   return (
     <DashboardShell>
@@ -122,14 +124,20 @@ export default async function MarketingFolderPage({ params }: Params) {
               </div>
               <div className="flex items-center gap-2 text-[13px] font-dm font-semibold text-muted">
                 {images > 0 && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                  <a
+                    href="#images"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 transition-colors hover:border-[#0ABFA3]/50 hover:text-[#0ABFA3]"
+                  >
                     <ImageIcon size={13} /> {images} {images === 1 ? "image" : "images"}
-                  </span>
+                  </a>
                 )}
                 {videos > 0 && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                  <a
+                    href="#videos"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 transition-colors hover:border-[#0ABFA3]/50 hover:text-[#0ABFA3]"
+                  >
                     <Film size={13} /> {videos} {videos === 1 ? "video" : "videos"}
-                  </span>
+                  </a>
                 )}
               </div>
             </div>
@@ -144,7 +152,7 @@ export default async function MarketingFolderPage({ params }: Params) {
                 <p className="max-w-sm font-dm text-[15px] text-muted">This collection is empty for now. Check back soon.</p>
               </div>
             ) : (
-              <MarketingAdGrid ads={ads} />
+              <MarketingFolderTabs imageAds={imageAds} videoAds={videoAds} />
             )}
           </div>
         </section>
