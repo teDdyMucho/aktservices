@@ -5,8 +5,7 @@ import Image from "next/image";
 import { ArrowUpRight, MessageCircle, Send, X } from "lucide-react";
 import { Akt3DLogo } from "@/components/ui/akt-3d-logo";
 import { GLSLHills } from "@/components/ui/glsl-hills";
-import GhlAffiliate from "@/components/GhlAffiliate";
-import AiHandWave from "@/components/AiHandWave";
+import HeroPanels from "@/components/HeroPanels";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Nav from "@/components/Nav";
 import { useEffect, useRef, useState } from "react";
@@ -147,22 +146,18 @@ export default function Home() {
 
       <Nav />
 
-      {/* GoHighLevel affiliate badge — right */}
-      <GhlAffiliate />
+      {/* Three panels — GoHighLevel · Our Services · Marketing Ads */}
+      <HeroPanels />
 
-      {/* AI Tools hand wave — left */}
-      <AiHandWave />
-
-      <div className="pointer-events-none absolute left-1/2 top-[34%] z-20 h-[min(46vw,46vh)] w-[min(46vw,46vh)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0abfa3]/20 blur-3xl" />
-      <Akt3DLogo className="absolute left-1/2 top-[34%] z-30 h-[min(58vw,58vh)] w-[min(68vw,68vh)] -translate-x-1/2 -translate-y-1/2" />
+      <div className="pointer-events-none absolute left-1/2 top-[34%] z-20 h-[min(46vw,46vh)] w-[min(46vw,46vh)] lg:top-[27%] lg:h-[min(34vw,34vh)] lg:w-[min(34vw,34vh)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0abfa3]/20 blur-3xl" />
+      <Akt3DLogo className="absolute left-1/2 top-[34%] z-30 h-[min(58vw,58vh)] w-[min(68vw,68vh)] -translate-x-1/2 -translate-y-1/2 lg:top-[27%] lg:h-[min(44vw,44vh)] lg:w-[min(52vw,52vh)]" />
 
       {/* Card — closed: compact · open: chat panel */}
       <section
-        className="absolute left-1/2 z-40 w-full px-4 transition-all duration-300"
+        className="absolute right-4 z-50 w-[calc(100vw-32px)] transition-all duration-300 sm:right-6"
         style={{
-          top: chatOpen ? "50%" : "58%",
-          transform: "translate(-50%, -50%)",
-          maxWidth: chatOpen ? "min(540px, calc(100vw - 32px))" : "min(360px, calc(100vw - 32px))",
+          bottom: "calc(112px + env(safe-area-inset-bottom))",
+          maxWidth: chatOpen ? "min(420px, calc(100vw - 32px))" : "min(300px, calc(100vw - 32px))",
         }}
       >
         <div
@@ -209,7 +204,7 @@ export default function Home() {
               </div>
 
               {/* Messages */}
-              <div className="mb-3 flex h-[min(460px,60vh)] flex-col gap-2 overflow-y-auto pr-0.5 scrollbar-none">
+              <div className="mb-3 flex h-[min(380px,50vh)] flex-col gap-2 overflow-y-auto pr-0.5 scrollbar-none">
                 {messages.map((m, i) => (
                   <div
                     key={i}

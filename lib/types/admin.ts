@@ -47,6 +47,30 @@ export type BlogPostInput = {
   publishedAt?: string;
 };
 
+export type MarketingMediaType = "image" | "video";
+
+/** One uploaded marketing ad (image or video) shown on /marketing. */
+export type MarketingAd = {
+  id: string;
+  title: string;
+  description: string;
+  mediaUrl: string;
+  mediaType: MarketingMediaType;
+  storagePath: string;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Sent by the admin after the file has been uploaded straight to Storage. */
+export type MarketingAdInput = {
+  title: string;
+  description: string;
+  storagePath: string;
+  mediaType: MarketingMediaType;
+  published?: boolean;
+};
+
 export type LeadStatus = "new" | "contacted" | "closed";
 
 export type Lead = {

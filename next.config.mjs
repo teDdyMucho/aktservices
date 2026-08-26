@@ -17,6 +17,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://xzzabzqivilczfvylrip.supabase.co https://*.vercel.app https://*.aktservices.org",
+      "media-src 'self' blob: https://xzzabzqivilczfvylrip.supabase.co",
       "connect-src 'self' https://xzzabzqivilczfvylrip.supabase.co https://api.leadconnectorhq.com wss://xzzabzqivilczfvylrip.supabase.co https://primary-production-6722.up.railway.app",
       "frame-src 'self' https://api.leadconnectorhq.com",
       "object-src 'self'",

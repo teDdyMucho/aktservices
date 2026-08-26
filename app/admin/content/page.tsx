@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, FileText, Handshake, Lock, Newspaper } from "lucide-react";
+import { ArrowUpRight, FileText, Handshake, Lock, Megaphone, Newspaper } from "lucide-react";
 
 export const metadata = { title: "Admin · Content | AKT" };
 
@@ -17,8 +17,8 @@ export default function AdminContentPage() {
           Content management
         </h2>
         <p className="mt-2 max-w-2xl text-[15px] font-dm leading-relaxed text-muted">
-          Manage what shows on the public site. Blog posts are editable here and
-          publish without a redeploy.
+          Manage what shows on the public site. Blog posts and marketing ads are
+          editable here and publish without a redeploy.
         </p>
       </div>
 
@@ -45,6 +45,31 @@ export default function AdminContentPage() {
           </h3>
           <p className="mt-2 text-[13px] font-dm leading-relaxed text-muted">
             Create, edit, publish, and delete posts shown on <span className="text-primary">/blog</span>.
+          </p>
+        </Link>
+
+        {/* Marketing ads — live */}
+        <Link
+          href="/admin/content/marketing"
+          className="glow-card group relative flex flex-col rounded-card border border-border bg-surface p-6 transition-all duration-200 hover:shadow-card"
+        >
+          <div className="mb-4 flex items-start justify-between">
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-lg"
+              style={{ background: "#073B34" }}
+            >
+              <Megaphone size={20} style={{ color: "#0ABFA3" }} strokeWidth={1.75} />
+            </div>
+            <ArrowUpRight size={18} className="text-muted transition-colors group-hover:text-primary" />
+          </div>
+          <h3
+            className="font-syne text-body text-[16px] font-bold transition-colors group-hover:text-primary"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            Marketing ads
+          </h3>
+          <p className="mt-2 text-[13px] font-dm leading-relaxed text-muted">
+            Upload images and videos shown on <span className="text-primary">/marketing</span> and the homepage panel.
           </p>
         </Link>
 

@@ -83,6 +83,121 @@ const FREE_PLAN = {
   icon: Gift,
 };
 
+/**
+ * The GoHighLevel plans/offers modal. Exported so other surfaces (e.g. the
+ * homepage GHL panel in HeroPanels) can open the exact same picker.
+ */
+export function GhlPlansModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.82)" }}
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.92, opacity: 0, y: 16 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.92, opacity: 0, y: 16 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#155E53]/50 bg-[#0b0d10] shadow-2xl shadow-black/60"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#155E53]/40 px-5 py-4">
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/image/GHL.png"
+                  alt="GoHighLevel"
+                  className="h-7 w-auto"
+                  style={{ filter: "brightness(0.85) hue-rotate(-30deg) saturate(1.4)" }}
+                />
+                <div>
+                  <p className="font-syne text-[15px] font-bold text-white" style={{ letterSpacing: "-0.01em" }}>
+                    GoHighLevel
+                  </p>
+                  <p className="text-[11px] font-dm text-muted">Choose a plan or offer</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-muted transition-colors hover:text-white"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Plan buttons grid */}
+            <div className="grid grid-cols-2 gap-2.5 p-5 pb-3 sm:grid-cols-3">
+              {PLANS.map((plan) => {
+                const Icon = plan.icon;
+                return (
+                  <div key={plan.name} className="group relative">
+                    {/* Tooltip */}
+                    <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2.5 w-max max-w-[180px] -translate-x-1/2 rounded-lg border border-[#155E53]/60 bg-[#050608] px-3 py-2 text-center text-[11px] font-dm leading-relaxed text-white/90 opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100">
+                      {plan.desc}
+                      <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-[#050608]" />
+                    </div>
+                    <motion.a
+                      href={plan.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                      className="flex flex-col items-center gap-2 rounded-xl border border-[#155E53]/40 bg-[#062B26]/40 px-3 py-4 text-center hover:border-[#0ABFA3]/60 hover:bg-[#0ABFA3]/10"
+                    >
+                      <Icon size={20} style={{ color: "#0ABFA3" }} />
+                      <span className="text-[12px] font-dm font-semibold text-white">{plan.name}</span>
+                      <ArrowUpRight size={11} className="text-muted/50" />
+                    </motion.a>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Free — full-width highlight button */}
+            <div className="group relative px-5 pb-5">
+              {/* Tooltip */}
+              <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2.5 w-max max-w-[200px] -translate-x-1/2 rounded-lg border border-[#155E53]/60 bg-[#050608] px-3 py-2 text-center text-[11px] font-dm leading-relaxed text-white/90 opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100">
+                {FREE_PLAN.desc}
+                <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-[#050608]" />
+              </div>
+              <motion.a
+                href={FREE_PLAN.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.035 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                className="relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-[#0ABFA3]/50 bg-gradient-to-r from-[#062B26] via-[#0ABFA3]/15 to-[#062B26] px-5 py-3.5 text-center shadow-[0_0_18px_rgba(10,191,163,0.18)]"
+              >
+                {/* animated glow sweep */}
+                <motion.span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-xl bg-[#0ABFA3]/10"
+                  animate={{ opacity: [0.4, 0.9, 0.4] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <FREE_PLAN.icon size={18} style={{ color: "#0ABFA3" }} className="relative shrink-0" />
+                <span className="relative font-syne text-[14px] font-bold tracking-wide text-white">
+                  {FREE_PLAN.name}
+                </span>
+                <ArrowUpRight size={14} className="relative text-[#0ABFA3]" />
+              </motion.a>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function GhlAffiliate() {
   const [open, setOpen] = useState(false);
 
@@ -176,112 +291,7 @@ export default function GhlAffiliate() {
       </div>
 
       {/* Plans modal */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-            style={{ background: "rgba(0,0,0,0.82)" }}
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0, y: 16 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 16 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#155E53]/50 bg-[#0b0d10] shadow-2xl shadow-black/60"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-[#155E53]/40 px-5 py-4">
-                <div className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/image/GHL.png"
-                    alt="GoHighLevel"
-                    className="h-7 w-auto"
-                    style={{ filter: "brightness(0.85) hue-rotate(-30deg) saturate(1.4)" }}
-                  />
-                  <div>
-                    <p className="font-syne text-[15px] font-bold text-white" style={{ letterSpacing: "-0.01em" }}>
-                      GoHighLevel
-                    </p>
-                    <p className="text-[11px] font-dm text-muted">Choose a plan or offer</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-muted transition-colors hover:text-white"
-                >
-                  <X size={15} />
-                </button>
-              </div>
-
-              {/* Plan buttons grid */}
-              <div className="grid grid-cols-2 gap-2.5 p-5 pb-3 sm:grid-cols-3">
-                {PLANS.map((plan) => {
-                  const Icon = plan.icon;
-                  return (
-                    <div key={plan.name} className="group relative">
-                      {/* Tooltip */}
-                      <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2.5 w-max max-w-[180px] -translate-x-1/2 rounded-lg border border-[#155E53]/60 bg-[#050608] px-3 py-2 text-center text-[11px] font-dm leading-relaxed text-white/90 opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100">
-                        {plan.desc}
-                        <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-[#050608]" />
-                      </div>
-                      <motion.a
-                        href={plan.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 380, damping: 22 }}
-                        className="flex flex-col items-center gap-2 rounded-xl border border-[#155E53]/40 bg-[#062B26]/40 px-3 py-4 text-center hover:border-[#0ABFA3]/60 hover:bg-[#0ABFA3]/10"
-                      >
-                        <Icon size={20} style={{ color: "#0ABFA3" }} />
-                        <span className="text-[12px] font-dm font-semibold text-white">{plan.name}</span>
-                        <ArrowUpRight size={11} className="text-muted/50" />
-                      </motion.a>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Free — full-width highlight button */}
-              <div className="group relative px-5 pb-5">
-                {/* Tooltip */}
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2.5 w-max max-w-[200px] -translate-x-1/2 rounded-lg border border-[#155E53]/60 bg-[#050608] px-3 py-2 text-center text-[11px] font-dm leading-relaxed text-white/90 opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100">
-                  {FREE_PLAN.desc}
-                  <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-[#050608]" />
-                </div>
-                <motion.a
-                  href={FREE_PLAN.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.035 }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 380, damping: 22 }}
-                  className="relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-[#0ABFA3]/50 bg-gradient-to-r from-[#062B26] via-[#0ABFA3]/15 to-[#062B26] px-5 py-3.5 text-center shadow-[0_0_18px_rgba(10,191,163,0.18)]"
-                >
-                  {/* animated glow sweep */}
-                  <motion.span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 rounded-xl bg-[#0ABFA3]/10"
-                    animate={{ opacity: [0.4, 0.9, 0.4] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                  <FREE_PLAN.icon size={18} style={{ color: "#0ABFA3" }} className="relative shrink-0" />
-                  <span className="relative font-syne text-[14px] font-bold tracking-wide text-white">
-                    {FREE_PLAN.name}
-                  </span>
-                  <ArrowUpRight size={14} className="relative text-[#0ABFA3]" />
-                </motion.a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <GhlPlansModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
