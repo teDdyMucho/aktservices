@@ -2,60 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Film, ImageIcon, X } from "lucide-react";
+import { X } from "lucide-react";
+import AdMediaTile from "@/components/AdMediaTile";
 import type { MarketingAd } from "@/lib/types/admin";
 
-/**
- * Card media that respects the file's own orientation: landscape media fills a
- * 16:9 frame; portrait media (e.g. Reels/TikTok-style ads) switches to a
- * taller 4:5 frame and is shown whole (contain) instead of being cropped.
- */
-function AdMedia({ ad, onOpenImage }: { ad: MarketingAd; onOpenImage: () => void }) {
-  const [portrait, setPortrait] = useState(false);
-  const frame = portrait ? "aspect-[4/5]" : "aspect-video";
-  const fit = portrait ? "object-contain" : "object-cover";
-
-  return (
-    <div className={`relative ${frame} overflow-hidden bg-black`}>
-      {ad.mediaType === "video" ? (
-        <video
-          src={ad.mediaUrl}
-          className={`h-full w-full ${fit}`}
-          controls
-          playsInline
-          preload="metadata"
-          onLoadedMetadata={(e) => {
-            const v = e.currentTarget;
-            if (v.videoWidth && v.videoHeight) setPortrait(v.videoHeight > v.videoWidth);
-          }}
-        />
-      ) : (
-        <button onClick={onOpenImage} className="block h-full w-full cursor-zoom-in" aria-label={`Open ${ad.title}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={ad.mediaUrl}
-            alt={ad.title}
-            loading="lazy"
-            onLoad={(e) => {
-              const im = e.currentTarget;
-              if (im.naturalWidth && im.naturalHeight) setPortrait(im.naturalHeight > im.naturalWidth);
-            }}
-            className={`h-full w-full ${fit} transition-transform duration-500 group-hover:scale-[1.04]`}
-          />
-        </button>
-      )}
-      <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-white/80 backdrop-blur">
-        {ad.mediaType === "video" ? <Film size={10} /> : <ImageIcon size={10} />}
-        {ad.mediaType}
-      </span>
-    </div>
-  );
-}
-
-/**
- * Grid of ad cards — every ad in a collection, each with its own inline video
- * player (native controls) or image (click → lightbox).
- */
 export default function MarketingAdGrid({ ads }: { ads: MarketingAd[] }) {
   const [active, setActive] = useState<MarketingAd | null>(null);
 
@@ -78,7 +28,7 @@ export default function MarketingAdGrid({ ads }: { ads: MarketingAd[] }) {
             className="neon-ring group flex flex-col"
           >
             <div className="flex flex-1 flex-col overflow-hidden rounded-[10px] bg-[#101113]">
-              <AdMedia ad={ad} onOpenImage={() => setActive(ad)} />
+              <AdMediaTile ad={ad} onOpenImage={() => setActive(ad)} />
               {/* Titles belong to the collection, not each ad — only show a description if one was written. */}
               {ad.description && (
                 <p className="px-4 py-3 text-[13px] font-dm leading-relaxed text-muted">{ad.description}</p>

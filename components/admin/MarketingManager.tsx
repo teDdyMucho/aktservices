@@ -27,6 +27,7 @@ import {
   XCircle,
 } from "lucide-react";
 import type { MarketingAd, MarketingFolder } from "@/lib/types/admin";
+import AdMediaTile from "@/components/AdMediaTile";
 import {
   IMAGE_TYPES,
   MARKETING_BUCKET,
@@ -388,17 +389,8 @@ export default function MarketingManager() {
                 ad.published ? "" : "opacity-60"
               }`}
             >
-              <div className="relative aspect-video bg-black">
-                {ad.mediaType === "video" ? (
-                  <video src={ad.mediaUrl} className="h-full w-full object-cover" muted playsInline preload="metadata" controls />
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={ad.mediaUrl} alt={ad.title} className="h-full w-full object-cover" />
-                )}
-                <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-white/80 backdrop-blur">
-                  {ad.mediaType === "video" ? <Film size={10} /> : <ImageIcon size={10} />}
-                  {ad.mediaType}
-                </span>
+              <div className="relative">
+                <AdMediaTile ad={ad} />
                 {!ad.published && (
                   <span className="absolute right-2 top-2 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-amber-300">
                     Hidden

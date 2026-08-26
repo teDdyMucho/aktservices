@@ -114,7 +114,7 @@ export default function MarketingGallery({
                       c.cover.type === "video" ? (
                         <video
                           src={c.cover.url}
-                          className="pointer-events-none h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                          className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                           muted
                           playsInline
                           preload="metadata"
@@ -125,7 +125,7 @@ export default function MarketingGallery({
                           src={c.cover.url}
                           alt={c.name}
                           loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                         />
                       )
                     ) : (
