@@ -14,6 +14,9 @@ const partnerSlugs = [
   "accelereight",
   "branding561",
   "october-marketing",
+  "build-one",
+  "easydrive-canada",
+  "linked",
 ];
 
 async function getBlogSlugs(): Promise<{ slug: string; updatedAt: string }[]> {

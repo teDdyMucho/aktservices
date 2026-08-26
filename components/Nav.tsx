@@ -35,7 +35,7 @@ const links = [
     value: "services",
     icon: BriefcaseBusiness,
   },
-  { label: "Partners", href: "/partners", value: "partners", icon: Handshake },
+  { label: "Portfolio", href: "/partners", value: "partners", icon: Handshake },
   { label: "AI Tools", href: "/ai-tools", value: "ai-tools", icon: Bot },
   { label: "Marketing", href: "/marketing", value: "marketing", icon: Megaphone },
   { label: "Blog", href: "/blog", value: "blog", icon: Newspaper },

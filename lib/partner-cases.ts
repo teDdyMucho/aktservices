@@ -179,6 +179,60 @@ export const partnerCases = [
       "Dealership leads are now qualified and responded to within seconds across all channels, 24/7. No Closebot subscription. Full ownership. AKT manages ongoing maintenance and optimization.",
     tools: ["n8n", "GoHighLevel", "Custom AI Chatbot", "Retell AI", "SMS Automation"],
   },
+  {
+    slug: "build-one",
+    tag: "Construction Ops · CRM · AI",
+    title: "Build One",
+    logo: "/image/buildone.svg" as string | null,
+    industry: "Design & Construction",
+    location: "Australia",
+    metric: "7 dashboard views · AI lead scoring live",
+    summary:
+      "AKT built Build One's connected operating layer — a seven-view operations dashboard with a shared Project Scheduler, GoHighLevel CRM with website lead capture and nurture, 'Oliver' AI lead qualification in n8n scoring leads Bronze to Platinum, and live integrations with Xero, Wunderbuild, and a central Supabase project database.",
+    challenge:
+      "Build One's project scheduling, pipeline activity, financial performance, customer contacts, lead scoring, and appointment follow-up lived in separate systems — the team had to manually reconcile information across tools and review every lead by hand.",
+    solution:
+      "AKT designed one operating layer: a responsive dashboard and Project Scheduler on Supabase, GoHighLevel pipeline + qualification forms + automated follow-up, an n8n conversational AI (Oliver) that scores and routes every lead, and live Xero, Wunderbuild, and GHL data surfaced in the dashboard.",
+    result:
+      "Build One now runs from one source of truth — projects centralized in Supabase, pipeline and financials live from GoHighLevel and Xero, every enquiry AI-scored and categorized, and Gold/Platinum leads automatically creating 24-hour follow-up tasks and sales alerts.",
+    tools: ["GoHighLevel", "n8n", "OpenAI", "Xero", "Supabase", "Wunderbuild", "Squarespace", "Netlify"],
+  },
+  {
+    slug: "easydrive-canada",
+    tag: "Auto Finance AI",
+    title: "EasyDrive Canada",
+    logo: "/image/easydrive.svg" as string | null,
+    industry: "Auto Finance · Vehicle Sales",
+    location: "Canada",
+    metric: "Application-to-appointment fully automated",
+    summary:
+      "AKT connected EasyDrive's finance application intake, GoHighLevel CRM, AI qualification, multi-channel follow-up, live vehicle inventory, and appointment booking into one automated customer journey — from raw finance email to a clean finance-manager handoff.",
+    challenge:
+      "Raw finance application emails needed manual interpretation, CRM records could be incomplete or duplicated, qualification meant repeating questions applicants had already answered, follow-up depended on staff availability, and vehicle or booking questions sat outside the conversation flow.",
+    solution:
+      "AKT built five connected pieces on n8n + GoHighLevel + OpenAI: an application parser that maps EasyDrive Finance and GetGoing emails to CRM contacts and custom fields, an AI qualifier with conversation memory, a 4-channel follow-up engine with 10 long-term recovery stages, calendar-aware appointment booking, and a live inventory assistant grounded in internal stock only.",
+    result:
+      "Applications now land as standardized applicant records, AI asks only what's still missing, follow-up runs automatically across SMS, calls, voicemail and email, and inventory lookup plus booking happen inside the AI conversation — with opportunity-card summaries giving the finance team instant context.",
+    tools: ["GoHighLevel", "n8n", "OpenAI", "Gmail", "JavaScript", "Calendar APIs"],
+  },
+  {
+    slug: "linked",
+    tag: "Ecommerce × CRM Automation",
+    title: "LINKED",
+    logo: "/image/linked.png" as string | null,
+    industry: "Permanent Jewelry Training · Ecommerce",
+    location: "United States",
+    metric: "1,640 webinar contacts · 100+ opportunities automated",
+    summary:
+      "AKT built and maintains the automation layer connecting LINKED's Shopify purchases, GoHighLevel CRM tagging, abandoned-checkout recovery, student onboarding, English/Spanish webinars, pipelines with 100+ opportunities, Google Sheets reporting, and BoldSign document workflows.",
+    challenge:
+      "LINKED's customer journey spans Shopify purchases, student programs, webinars, abandoned checkouts, CRM pipelines, SMS, reporting, and document signing. Customer data had to move reliably between platforms without manual tagging, missed workflows, or incorrect follow-up.",
+    solution:
+      "AKT mapped every Shopify product to GHL tags (warranty, extended warranty, student, product), built the Shopify→GHL contact sync, abandoned-checkout detection and recovery, total-spend segmentation, 5+ pipeline workflows, bilingual webinar operations, Google Sheets order reporting with backups, and an n8n API integration for BoldSign where Zapier fell short.",
+    result:
+      "Purchases, tags, pipelines, and follow-up now work as one coordinated system — customer classification and routing are automated across Shopify and GHL, and workflows are monitored, debugged, backed up, and updated as products change.",
+    tools: ["Shopify", "GoHighLevel", "n8n", "Zapier", "Google Sheets", "BoldSign", "Gmail", "Slack"],
+  },
 ];
 
 export type PartnerCase = (typeof partnerCases)[number];

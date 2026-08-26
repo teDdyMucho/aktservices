@@ -12,7 +12,7 @@ type PageProps = {
   }>;
 };
 
-const DEDICATED_PAGES = ["proto-financial", "southland-roofing", "lucky7-distribution", "digitalflo", "kda-innovations", "kinnobot", "october-marketing", "branding561", "accelereight", "dadstudio"];
+const DEDICATED_PAGES = ["proto-financial", "southland-roofing", "lucky7-distribution", "digitalflo", "kda-innovations", "kinnobot", "october-marketing", "branding561", "accelereight", "dadstudio", "build-one", "easydrive-canada", "linked"];
 
 export function generateStaticParams() {
   return partnerCases

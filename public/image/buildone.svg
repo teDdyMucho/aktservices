@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 250" width="1024" height="250" role="img" aria-label="Build One Design &amp; Construction">
+  <!-- Circle mark: dark top half, grey bottom half, with a rounded "B" cut-out -->
+  <defs>
+    <clipPath id="top"><rect x="0" y="0" width="250" height="125"/></clipPath>
+    <clipPath id="bot"><rect x="0" y="125" width="250" height="125"/></clipPath>
+  </defs>
+  <g clip-path="url(#top)"><circle cx="125" cy="125" r="122" fill="#F2F3F5"/></g>
+  <g clip-path="url(#bot)"><circle cx="125" cy="125" r="122" fill="#9AA0A8"/></g>
+  <rect x="66" y="48" width="116" height="154" rx="30" fill="#0A0B0D"/>
+  <rect x="96" y="80" width="96" height="30" rx="8" fill="#F2F3F5"/>
+  <rect x="96" y="140" width="106" height="30" rx="8" fill="#9AA0A8"/>
+
+  <!-- Wordmark -->
+  <text x="300" y="130" font-family="Montserrat, 'Segoe UI', Arial, Helvetica, sans-serif" font-weight="800" font-size="112" letter-spacing="6" fill="#F2F3F5">BUILD</text>
+  <text x="682" y="130" font-family="Montserrat, 'Segoe UI', Arial, Helvetica, sans-serif" font-weight="800" font-size="112" letter-spacing="6" fill="#9AA0A8">ONE</text>
+  <text x="304" y="200" font-family="Montserrat, 'Segoe UI', Arial, Helvetica, sans-serif" font-weight="600" font-size="34" letter-spacing="9" fill="#9AA0A8">DESIGN &amp; CONSTRUCTION</text>
+</svg>
