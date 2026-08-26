@@ -86,6 +86,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
+/** "← Back to collections" — returns to the /marketing overview. */
+function BackButton({ className = "" }: { className?: string }) {
+  return (
+    <Link
+      href="/marketing"
+      className={`inline-flex items-center gap-2 rounded-lg border border-border bg-black/40 px-4 py-2 text-[13px] font-dm font-semibold text-body transition-colors hover:border-[#0ABFA3]/60 hover:bg-[#0ABFA3]/10 hover:text-[#0ABFA3] ${className}`}
+    >
+      <ArrowLeft size={15} /> Back to collections
+    </Link>
+  );
+}
+
 export default async function MarketingFolderPage({ params }: Params) {
   const { slug } = await params;
   const data = await getFolder(slug);
@@ -101,16 +113,12 @@ export default async function MarketingFolderPage({ params }: Params) {
     <DashboardShell>
       <main>
         {/* Header */}
-        <section className="border-b border-border bg-[#101113] py-10 sm:py-12">
+        {/* pt = fixed 72px nav + breathing room so the back button never sits under the header */}
+        <section className="border-b border-border bg-[#101113] pb-10 pt-[calc(72px+2.5rem)] sm:pb-12 sm:pt-[calc(72px+3rem)]">
           <div className="mx-auto max-w-7xl px-6">
-            <Link
-              href="/marketing"
-              className="mb-5 inline-flex items-center gap-1.5 text-[13px] font-dm text-muted transition-colors hover:text-body"
-            >
-              <ArrowLeft size={14} /> All collections
-            </Link>
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="max-w-3xl">
+                <BackButton className="mb-5" />
                 <p className="accent-bar mb-3 text-[12px] font-dm font-semibold uppercase tracking-widest text-muted">
                   Marketing Ads
                 </p>
@@ -154,6 +162,11 @@ export default async function MarketingFolderPage({ params }: Params) {
             ) : (
               <MarketingFolderTabs imageAds={imageAds} videoAds={videoAds} />
             )}
+
+            {/* Bottom back button for long collections */}
+            <div className="mt-12 flex justify-center border-t border-border pt-8">
+              <BackButton />
+            </div>
           </div>
         </section>
       </main>

@@ -52,7 +52,8 @@ export default async function MarketingPage() {
     <DashboardShell>
       <main>
         {/* Hero */}
-        <section className="border-b border-border bg-[#101113] py-16">
+        {/* pt = fixed 72px nav + breathing room so the eyebrow never sits under the header */}
+        <section className="border-b border-border bg-[#101113] pb-16 pt-[calc(72px+3rem)]">
           <div className="mx-auto max-w-7xl px-6">
             <div className="max-w-2xl">
               <p className="accent-bar mb-4 text-[12px] font-dm font-semibold uppercase tracking-widest text-muted">
