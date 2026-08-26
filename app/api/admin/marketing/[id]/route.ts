@@ -18,9 +18,22 @@ export async function PATCH(request: Request, { params }: Params) {
     title?: string;
     description?: string;
     published?: boolean;
+    folderId?: string | null;
   };
 
   const patch: Record<string, unknown> = {};
+  if (body.folderId !== undefined) {
+    if (body.folderId) {
+      const admin = createSupabaseAdminClient();
+      const { data: folder } = await admin
+        .from("marketing_folders")
+        .select("id")
+        .eq("id", body.folderId)
+        .maybeSingle();
+      if (!folder) return NextResponse.json({ error: "Folder not found." }, { status: 400 });
+    }
+    patch.folder_id = body.folderId || null;
+  }
   if (typeof body.title === "string") {
     if (!body.title.trim()) {
       return NextResponse.json({ error: "Title is required." }, { status: 400 });

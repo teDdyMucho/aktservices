@@ -1,0 +1,133 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Film, ImageIcon, X } from "lucide-react";
+import type { MarketingAd } from "@/lib/types/admin";
+
+const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+/**
+ * Card media that respects the file's own orientation: landscape media fills a
+ * 16:9 frame; portrait media (e.g. Reels/TikTok-style ads) switches to a
+ * taller 4:5 frame and is shown whole (contain) instead of being cropped.
+ */
+function AdMedia({ ad, onOpenImage }: { ad: MarketingAd; onOpenImage: () => void }) {
+  const [portrait, setPortrait] = useState(false);
+  const frame = portrait ? "aspect-[4/5]" : "aspect-video";
+  const fit = portrait ? "object-contain" : "object-cover";
+
+  return (
+    <div className={`relative ${frame} overflow-hidden bg-black`}>
+      {ad.mediaType === "video" ? (
+        <video
+          src={ad.mediaUrl}
+          className={`h-full w-full ${fit}`}
+          controls
+          playsInline
+          preload="metadata"
+          onLoadedMetadata={(e) => {
+            const v = e.currentTarget;
+            if (v.videoWidth && v.videoHeight) setPortrait(v.videoHeight > v.videoWidth);
+          }}
+        />
+      ) : (
+        <button onClick={onOpenImage} className="block h-full w-full cursor-zoom-in" aria-label={`Open ${ad.title}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ad.mediaUrl}
+            alt={ad.title}
+            loading="lazy"
+            onLoad={(e) => {
+              const im = e.currentTarget;
+              if (im.naturalWidth && im.naturalHeight) setPortrait(im.naturalHeight > im.naturalWidth);
+            }}
+            className={`h-full w-full ${fit} transition-transform duration-500 group-hover:scale-[1.04]`}
+          />
+        </button>
+      )}
+      <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-white/80 backdrop-blur">
+        {ad.mediaType === "video" ? <Film size={10} /> : <ImageIcon size={10} />}
+        {ad.mediaType}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Grid of ad cards — every ad in a collection, each with its own inline video
+ * player (native controls) or image (click → lightbox).
+ */
+export default function MarketingAdGrid({ ads }: { ads: MarketingAd[] }) {
+  const [active, setActive] = useState<MarketingAd | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active]);
+
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {ads.map((ad, i) => (
+          <motion.article
+            key={ad.id}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: Math.min(i, 8) * 0.04 }}
+            className="neon-ring group flex flex-col"
+          >
+            <div className="flex flex-1 flex-col overflow-hidden rounded-[10px] bg-[#101113]">
+            <AdMedia ad={ad} onOpenImage={() => setActive(ad)} />
+            <div className="flex flex-1 flex-col p-5">
+              <h3 className="font-syne text-[17px] font-bold text-body" style={{ letterSpacing: "-0.01em" }}>
+                {ad.title}
+              </h3>
+              {ad.description && <p className="mt-2 text-[14px] font-dm leading-relaxed text-muted">{ad.description}</p>}
+              <p className="mt-auto pt-4 text-[12px] font-dm text-muted/70">{dateFmt.format(new Date(ad.createdAt))}</p>
+            </div>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+
+      {/* Image lightbox */}
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            onClick={() => setActive(null)}
+          >
+            <button
+              onClick={() => setActive(null)}
+              aria-label="Close"
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/60 text-white/80 transition-colors hover:text-white"
+            >
+              <X size={18} />
+            </button>
+            <motion.figure
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex max-h-full max-w-5xl flex-col items-center"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={active.mediaUrl} alt={active.title} className="max-h-[80vh] w-auto max-w-full rounded-lg object-contain shadow-2xl shadow-black/60" />
+              <figcaption className="mt-4 text-center">
+                <p className="font-syne text-[16px] font-bold text-white">{active.title}</p>
+                {active.description && <p className="mt-1 max-w-xl text-[13px] font-dm text-white/60">{active.description}</p>}
+              </figcaption>
+            </motion.figure>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

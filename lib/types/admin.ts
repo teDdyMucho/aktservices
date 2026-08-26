@@ -58,6 +58,10 @@ export type MarketingAd = {
   mediaType: MarketingMediaType;
   storagePath: string;
   published: boolean;
+  /** Folder (collection) this ad lives in, or null for unsorted. */
+  folderId: string | null;
+  folderSlug: string | null;
+  folderName: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -68,6 +72,27 @@ export type MarketingAdInput = {
   description: string;
   storagePath: string;
   mediaType: MarketingMediaType;
+  folderId?: string | null;
+  published?: boolean;
+};
+
+/** A folder / collection of ads (one campaign, one client, etc.). */
+export type MarketingFolder = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  coverUrl: string | null;
+  published: boolean;
+  /** Number of ads inside (published-only on public surfaces). */
+  adCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MarketingFolderInput = {
+  name: string;
+  description?: string;
   published?: boolean;
 };
 

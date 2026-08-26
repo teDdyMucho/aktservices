@@ -1,67 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import { Film, ImageIcon, LayoutGrid, Megaphone, ShieldCheck, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Film, Folder, ImageIcon, Megaphone, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import type { MarketingAd } from "@/lib/types/admin";
+import { OTHER_SLUG, pickCover } from "@/lib/marketing";
+import type { MarketingAd, MarketingFolder } from "@/lib/types/admin";
 
 const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-type Filter = "all" | "image" | "video";
+type Card = {
+  key: string;
+  href: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  ads: MarketingAd[];
+  cover: { url: string; type: "image" | "video" } | null;
+};
 
 /**
- * Public gallery for /marketing. Everyone sees every published ad; admins
- * additionally get a shortcut to the manager.
+ * /marketing overview: one card per collection (folder). Clicking a card opens
+ * /marketing/<slug>, which lists every ad inside as its own playable card.
+ * Ads that aren't in a folder are grouped into a single "More ads" card.
  */
-export default function MarketingGallery({ ads }: { ads: MarketingAd[] }) {
+export default function MarketingGallery({
+  folders,
+  adsByFolder,
+  loose,
+}: {
+  folders: MarketingFolder[];
+  adsByFolder: Record<string, MarketingAd[]>;
+  loose: MarketingAd[];
+}) {
   const { ready, isAdmin } = useAuth();
-  const [filter, setFilter] = useState<Filter>("all");
-  const [active, setActive] = useState<MarketingAd | null>(null);
 
-  const shown = filter === "all" ? ads : ads.filter((a) => a.mediaType === filter);
-  const images = ads.filter((a) => a.mediaType === "image").length;
-  const videos = ads.length - images;
-
-  // Close the lightbox on Escape.
-  useEffect(() => {
-    if (!active) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [active]);
+  const cards: Card[] = folders.map((f) => {
+    const ads = adsByFolder[f.id] ?? [];
+    return {
+      key: f.id,
+      href: `/marketing/${f.slug}`,
+      name: f.name,
+      description: f.description,
+      createdAt: f.createdAt,
+      ads,
+      cover: pickCover(f, ads),
+    };
+  });
+  if (loose.length) {
+    cards.push({
+      key: "__other",
+      href: `/marketing/${OTHER_SLUG}`,
+      name: folders.length ? "More ads" : "All ads",
+      description: "",
+      createdAt: loose[0].createdAt,
+      ads: loose,
+      cover: pickCover({ coverUrl: null } as MarketingFolder, loose),
+    });
+  }
+  const total = cards.reduce((n, c) => n + c.ads.length, 0);
 
   return (
     <>
       {/* Toolbar */}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-[#101113] p-1">
-          {(
-            [
-              { key: "all", label: "All", count: ads.length, icon: LayoutGrid },
-              { key: "image", label: "Images", count: images, icon: ImageIcon },
-              { key: "video", label: "Videos", count: videos, icon: Film },
-            ] as const
-          ).map((t) => {
-            const Icon = t.icon;
-            const on = filter === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setFilter(t.key)}
-                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-dm font-semibold transition-colors ${
-                  on ? "bg-[#0ABFA3]/15 text-[#0ABFA3]" : "text-muted hover:text-body"
-                }`}
-              >
-                <Icon size={14} />
-                {t.label}
-                <span className={`text-[11px] ${on ? "text-[#0ABFA3]/70" : "text-muted/60"}`}>{t.count}</span>
-              </button>
-            );
-          })}
-        </div>
-
+        <p className="text-[13px] font-dm text-muted">
+          {cards.length} {cards.length === 1 ? "collection" : "collections"} · {total} {total === 1 ? "ad" : "ads"}
+        </p>
         {ready && isAdmin && (
           <Link
             href="/admin/content/marketing"
@@ -72,120 +77,100 @@ export default function MarketingGallery({ ads }: { ads: MarketingAd[] }) {
         )}
       </div>
 
-      {/* Empty state */}
-      {shown.length === 0 && (
+      {/* Empty */}
+      {total === 0 && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-[#101113]">
             <Megaphone size={26} style={{ color: "#0ABFA3" }} strokeWidth={1.75} />
           </div>
           <h2 className="mb-2 font-syne text-[22px] font-bold text-body" style={{ letterSpacing: "-0.01em" }}>
-            {ads.length === 0 ? "No ads yet" : `No ${filter}s yet`}
+            No ads yet
           </h2>
-          <p className="max-w-sm font-dm text-[15px] text-muted">
-            {ads.length === 0
-              ? "Ads uploaded in the admin will appear here. Check back soon."
-              : "Try another filter to see the rest of the gallery."}
-          </p>
+          <p className="max-w-sm font-dm text-[15px] text-muted">Ads uploaded in the admin will appear here. Check back soon.</p>
         </div>
       )}
 
-      {/* Grid */}
-      {shown.length > 0 && (
+      {/* Collection cards */}
+      {cards.length > 0 && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((ad, i) => (
-            <motion.article
-              key={ad.id}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: Math.min(i, 8) * 0.04 }}
-              className="glow-card group flex flex-col overflow-hidden rounded-card border border-border bg-[#101113] transition-all duration-200 hover:shadow-card"
-            >
-              <div className="relative aspect-video overflow-hidden bg-black">
-                {ad.mediaType === "video" ? (
-                  <video
-                    src={ad.mediaUrl}
-                    className="h-full w-full object-cover"
-                    controls
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : (
-                  <button
-                    onClick={() => setActive(ad)}
-                    className="block h-full w-full cursor-zoom-in"
-                    aria-label={`Open ${ad.title}`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={ad.mediaUrl}
-                      alt={ad.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                    />
-                  </button>
-                )}
-                <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-white/80 backdrop-blur">
-                  {ad.mediaType === "video" ? <Film size={10} /> : <ImageIcon size={10} />}
-                  {ad.mediaType}
-                </span>
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-syne text-[17px] font-bold text-body" style={{ letterSpacing: "-0.01em" }}>
-                  {ad.title}
-                </h3>
-                {ad.description && (
-                  <p className="mt-2 text-[14px] font-dm leading-relaxed text-muted">{ad.description}</p>
-                )}
-                <p className="mt-auto pt-4 text-[12px] font-dm text-muted/70">
-                  {dateFmt.format(new Date(ad.createdAt))}
-                </p>
-              </div>
-            </motion.article>
-          ))}
+          {cards.map((c, i) => {
+            const images = c.ads.filter((a) => a.mediaType === "image").length;
+            const videos = c.ads.length - images;
+            return (
+              <motion.div
+                key={c.key}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: Math.min(i, 8) * 0.05 }}
+                className="neon-ring h-full"
+              >
+                <Link
+                  href={c.href}
+                  className="group flex h-full flex-col overflow-hidden rounded-[10px] bg-[#101113] transition-all duration-200"
+                >
+                  {/* Cover — not interactive; the whole card is the link */}
+                  <div className="relative aspect-video overflow-hidden bg-black">
+                    {c.cover ? (
+                      c.cover.type === "video" ? (
+                        <video
+                          src={c.cover.url}
+                          className="pointer-events-none h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                          muted
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={c.cover.url}
+                          alt={c.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                        />
+                      )
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Folder size={40} className="text-white/15" />
+                      </div>
+                    )}
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                    <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-dm font-semibold uppercase tracking-wider text-white/80 backdrop-blur">
+                      <Folder size={10} /> Collection
+                    </span>
+                    <span className="pointer-events-none absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-dm font-semibold text-white/85 backdrop-blur">
+                      {images > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <ImageIcon size={11} /> {images}
+                        </span>
+                      )}
+                      {videos > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <Film size={11} /> {videos}
+                        </span>
+                      )}
+                    </span>
+                    <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-[#0ABFA3] px-2.5 py-1 text-[11px] font-dm font-bold text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                      Open <ArrowUpRight size={11} />
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-syne text-[18px] font-bold text-body transition-colors group-hover:text-[#0ABFA3]" style={{ letterSpacing: "-0.01em" }}>
+                        {c.name}
+                      </h3>
+                      <ArrowUpRight size={18} className="mt-0.5 shrink-0 text-muted transition-colors group-hover:text-[#0ABFA3]" />
+                    </div>
+                    {c.description && <p className="mt-2 line-clamp-2 text-[14px] font-dm leading-relaxed text-muted">{c.description}</p>}
+                    <p className="mt-auto pt-4 text-[12px] font-dm text-muted/70">
+                      {c.ads.length} {c.ads.length === 1 ? "ad" : "ads"} · {dateFmt.format(new Date(c.createdAt))}
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       )}
-
-      {/* Lightbox (images) */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-            onClick={() => setActive(null)}
-          >
-            <button
-              onClick={() => setActive(null)}
-              aria-label="Close"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/60 text-white/80 transition-colors hover:text-white"
-            >
-              <X size={18} />
-            </button>
-            <motion.figure
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-              className="flex max-h-full max-w-5xl flex-col items-center"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={active.mediaUrl}
-                alt={active.title}
-                className="max-h-[80vh] w-auto max-w-full rounded-lg object-contain shadow-2xl shadow-black/60"
-              />
-              <figcaption className="mt-4 text-center">
-                <p className="font-syne text-[16px] font-bold text-white">{active.title}</p>
-                {active.description && (
-                  <p className="mt-1 max-w-xl text-[13px] font-dm text-white/60">{active.description}</p>
-                )}
-              </figcaption>
-            </motion.figure>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

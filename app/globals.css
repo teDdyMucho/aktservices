@@ -118,6 +118,63 @@ body {
   }
 }
 
+/* A <video> that enters native fullscreen keeps its CSS object-fit, so a card
+   video styled with `object-cover` would be cropped to the screen's aspect.
+   Always letterbox/pillarbox in fullscreen so portrait videos stay portrait. */
+video:fullscreen,
+video:-webkit-full-screen {
+  object-fit: contain !important;
+  background: #000;
+}
+
+/* Revolving neon-green border — wrap a card in .neon-ring; the inner element
+   supplies its own background + rounded-[10px] so the ring shows as a 2px edge. */
+.neon-ring {
+  position: relative;
+  border-radius: 12px;
+  padding: 2px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 0 22px rgba(10, 191, 163, 0.16);
+  transition: box-shadow 0.2s ease;
+}
+.neon-ring:hover {
+  box-shadow: 0 0 34px rgba(10, 191, 163, 0.32);
+}
+.neon-ring::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(10, 191, 163, 0.12) 0deg,
+    rgba(10, 191, 163, 0.12) 250deg,
+    #0abfa3 305deg,
+    #7fffee 335deg,
+    rgba(10, 191, 163, 0.12) 360deg
+  );
+  animation: neonRevolve 3.2s linear infinite;
+}
+.neon-ring::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 2px;
+  border-radius: 10px;
+  background: #101113;
+}
+@keyframes neonRevolve {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neon-ring::before {
+    animation: none;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

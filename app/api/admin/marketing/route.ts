@@ -7,17 +7,19 @@ import type { MarketingAdInput } from "@/lib/types/admin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** GET /api/admin/marketing — every ad (incl. unpublished). Admin-only. */
-export async function GET() {
+/** GET /api/admin/marketing[?folderId=<uuid>|none] — every ad (incl. unpublished). Admin-only. */
+export async function GET(request: Request) {
   const guard = await requireAdminApi();
   if (!guard.ok) return guard.response;
 
-  const admin = createSupabaseAdminClient();
-  const { data, error } = await admin
-    .from("marketing_ads")
-    .select(MARKETING_COLUMNS)
-    .order("created_at", { ascending: false });
+  const folderId = new URL(request.url).searchParams.get("folderId");
 
+  const admin = createSupabaseAdminClient();
+  let q = admin.from("marketing_ads").select(MARKETING_COLUMNS).order("created_at", { ascending: false });
+  if (folderId === "none") q = q.is("folder_id", null);
+  else if (folderId) q = q.eq("folder_id", folderId);
+
+  const { data, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ads: (data as MarketingRow[]).map(rowToAd) });
 }
@@ -43,6 +45,13 @@ export async function POST(request: Request) {
 
   const admin = createSupabaseAdminClient();
 
+  // Folder must exist when given.
+  const folderId = body.folderId || null;
+  if (folderId) {
+    const { data: folder } = await admin.from("marketing_folders").select("id").eq("id", folderId).maybeSingle();
+    if (!folder) return NextResponse.json({ error: "Folder not found." }, { status: 400 });
+  }
+
   // Verify the object actually landed in the bucket before recording it.
   const folder = body.storagePath.split("/")[0];
   const name = body.storagePath.slice(folder.length + 1);
@@ -63,6 +72,7 @@ export async function POST(request: Request) {
       media_url: pub.publicUrl,
       media_type: body.mediaType,
       storage_path: body.storagePath,
+      folder_id: folderId,
       published: body.published ?? true,
     })
     .select(MARKETING_COLUMNS)
