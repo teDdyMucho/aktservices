@@ -1,24 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Film, ImageIcon } from "lucide-react";
+import { Film, ImageIcon, LayoutGrid } from "lucide-react";
 import type { MarketingAd } from "@/lib/types/admin";
 import MarketingAdGrid from "@/components/MarketingAdGrid";
 
-type Tab = "images" | "videos";
+type Tab = "all" | "videos" | "images";
 
 /**
- * Inside a collection, images and videos live on separate tabs. The active tab
- * is mirrored in the URL hash (#images / #videos) so the header pills and
- * shared links land on the right one.
+ * Inside a collection: All (videos first, then images) · Videos · Images.
+ * The active tab is mirrored in the URL hash (#all / #videos / #images) so the
+ * header pills and shared links land on the right one.
  */
 export default function MarketingFolderTabs({ imageAds, videoAds }: { imageAds: MarketingAd[]; videoAds: MarketingAd[] }) {
   const tabs: { key: Tab; label: string; icon: typeof Film; ads: MarketingAd[] }[] = [
-    { key: "images", label: "Images", icon: ImageIcon, ads: imageAds },
+    { key: "all", label: "All", icon: LayoutGrid, ads: [...videoAds, ...imageAds] },
     { key: "videos", label: "Videos", icon: Film, ads: videoAds },
+    { key: "images", label: "Images", icon: ImageIcon, ads: imageAds },
   ].filter((t) => t.ads.length > 0) as { key: Tab; label: string; icon: typeof Film; ads: MarketingAd[] }[];
 
-  const [tab, setTab] = useState<Tab>(tabs[0]?.key ?? "images");
+  const [tab, setTab] = useState<Tab>("all");
 
   // Follow the hash (#images / #videos) on load and when a header pill is clicked.
   useEffect(() => {
